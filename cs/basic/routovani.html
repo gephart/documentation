@@ -1,0 +1,141 @@
+<h1>Routování</h1>
+
+<h2>.htaccess</h2>
+<pre><code class="htaccess">RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php?_route=$1 [L,QSA]</code></pre>
+
+<h2>index.php</h2>
+<p>Hlavní soubor
+<ul>
+    <li>Vytvoří se DI container
+    <li>Nastaví se hlavní složka konfigurace
+    <li>Spustí router
+</ul>
+<p>To je celé kouzlo.</p>
+<pre><code class="php">&lt;?php
+
+use Gephart\DependencyInjection\Container;
+use Gephart\Configuration\Configuration;
+use Gephart\Routing\Router;
+
+include_once __DIR__ . "/vendor/autoload.php";
+
+$container = new Container();
+
+$configuration = $container->get(Configuration::class);
+$configuration->setDirectory(__DIR__ . "/config");
+
+$router = $container->get(Router::class);
+$router->run();</code></pre>
+
+<h2>/config/routing.json</h2>
+<p>Autoloading routes from controllers
+
+<pre><code class="json">{
+  "autoload": "src/"
+}</code></pre>
+
+<h2>/src/App/Controller/DefaultController.php</h2>
+
+
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use Gephart\Response\Response;
+
+class DefaultController
+{
+    /**
+     * @Route /
+     */
+    public function index() {
+        return new Response("Hello World");
+    }
+}</code></pre>
+
+<p>Nastavení routy:</p>
+<pre><code class="php">
+/**
+ * @Route {
+ *  "rule": "/page/{slug}/{limit}/{offset}",
+ *  "name": "page_detail",
+ *  "requirements": {
+ *      "limit": "[0-9]+",
+ *      "offset": "[0-9]+"
+ *  }
+ * }
+ */
+public function index($slug, $limit, $offset) {
+    return new Response("Hello " . $slug);
+}
+</code></pre>
+
+<h2>RoutePrefix</h2>
+
+<p>Následující nastavení odpovídá požadavku "/admin/page".
+
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use Gephart\Response\Response;
+
+/**
+ * @RoutePrefix /admin
+ */
+class AdminController
+{
+    /**
+     * @Route /page
+     */
+    public function index() {
+        return new Response("Hello Admin");
+    }
+}</code></pre>
+
+<h2>Generování URL</h2>
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use Gephart\Response\Response;
+use Gephart\Routing\Router;
+
+class DefaultController
+{
+
+    /**
+     * @var Router
+     */
+    private $router;
+
+    public function __construct(Router $router)
+    {
+        $this->router = $router;
+    }
+
+    /**
+     * @Route {
+     *  "rule": "/page/{slug}/{limit}/{offset}",
+     *  "name": "page_detail",
+     *  "requirements": {
+     *      "limit": "[0-9]+",
+     *      "offset": "[0-9]+"
+     *  }
+     * }
+     */
+    public function index($slug, $limit, $offset) {
+        $url = $this->router->generateUrl("page_detail", [
+            "slug" => "articles",
+            "limit" => "10",
+            "offset" => "20",
+        ]);
+
+        return new Response("Hello World - " . $url);
+    }
+}</code></pre>
+

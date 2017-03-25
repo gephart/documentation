@@ -1,0 +1,46 @@
+<h1>Šablony</h1>
+
+<h2>config/framework.json</h2>
+<pre><code class="json">{
+  "template": {
+    "dir": "template/",
+    "twig": {
+      "cache": "cache/twig/"
+    }
+  }
+}</code></pre>
+
+<h2>cache/twig/</h2>
+
+<p>Složka musí mít právo na zápis.</p>
+
+<h2>src/App/Controller/DefaultController.php</h2>
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use Gephart\Framework\Response\TemplateResponse;
+
+final class DefaultController
+{
+    /**
+     * @var TemplateResponse
+     */
+    private $response;
+
+    public function __construct(TemplateResponse $template_response)
+    {
+        $this->response = $template_response;
+    }
+
+    /**
+     * @Route /
+     * @return TemplateResponse
+     */
+    public function index() {
+        return $this->response->template("_framework/default.php");
+
+        // Or twig template
+        // return $this->response->template("_framework/default.html.twig");
+    }
+}</code></pre>

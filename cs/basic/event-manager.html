@@ -1,0 +1,52 @@
+<h1>Event manager</h1>
+
+
+<p>Vykreslení výstupu Response() má event Router::RESPONSE_RENDER_EVENT.
+<p>V hlavním souboru se zaregistruje listener:
+
+<h2>index.php</h2>
+
+<pre><code class="php">&lt;?php
+
+use Gephart\DependencyInjection\Container;
+use Gephart\Configuration\Configuration;
+use Gephart\Routing\Router;
+
+include_once __DIR__ . "/vendor/autoload.php";
+
+$container = new Container();
+
+$configuration = $container->get(Configuration::class);
+$configuration->setDirectory(__DIR__ . "/config");
+
+<strong>$container->get(\App\EventListener\ResponseListener::class);</strong>
+
+$router = $container->get(Router::class);
+$router->run();</code></pre>
+
+<h2>src/App/EventListener/ResponseListener.php</h2>
+<pre><code class="php">&lt;?php
+
+namespace App\EventListener;
+
+use Gephart\EventManager\Event;
+use Gephart\EventManager\EventManager;
+use Gephart\Routing\Router;
+
+class ResponseListener
+{
+    public function __construct(EventManager $event_manager)
+    {
+        $event_manager->attach(Router::RESPONSE_RENDER_EVENT, [$this, "reponseRender"]);
+    }
+
+    public function responseRender(Event $event)
+    {
+        $response = $event->getParam("response");
+        $response .= "Hello by listener";
+
+        $event->setParams([
+            "response" => $response
+        ]);
+    }
+}</code></pre>

@@ -1,0 +1,36 @@
+<h1>Dependency injection</h1>
+
+<p>Použití:
+<pre><code class="php">class A
+{
+    public function hello(string $world): string
+    {
+        return "hello " . $world;
+    }
+}
+
+class B
+{
+    private $a;
+
+    public function __construct(A $a)
+    {
+        $this-&gt;a = $a;
+    }
+
+    public function render()
+    {
+        return $this-&gt;a-&gt;hello("world");
+    }
+}
+
+// Bad
+$a = new A();
+$b = new B($a);
+$b-&gt;render();
+
+// Good
+$container = new Container();
+$b = $container-&gt;get(B::class);
+$b-&gt;render(); // hello world
+</code></pre>
