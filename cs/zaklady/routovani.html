@@ -21,7 +21,7 @@ use Gephart\DependencyInjection\Container;
 use Gephart\Configuration\Configuration;
 use Gephart\Routing\Router;
 
-include_once __DIR__ . "/vendor/autoload.php";
+include_once __DIR__ . "/../vendor/autoload.php";
 
 $container = new Container();
 
@@ -58,8 +58,7 @@ class DefaultController
 }</code></pre>
 
 <p>Nastavení routy:</p>
-<pre><code class="php">
-/**
+<pre><code class="php">/**
  * @Route {
  *  "rule": "/page/{slug}/{limit}/{offset}",
  *  "name": "page_detail",
@@ -71,8 +70,7 @@ class DefaultController
  */
 public function index($slug, $limit, $offset) {
     return new Response("Hello " . $slug);
-}
-</code></pre>
+}</code></pre>
 
 <h2>RoutePrefix</h2>
 
