@@ -1,0 +1,373 @@
+<h1>ORM - Práce s Entitami</h1>
+
+<p>
+    ORM slouží jako vrstva nad databází pro přístup k uloženým datům.
+</p>
+
+<h2>Konfikurace</h2>
+
+<p>
+    Pro nastavení připojení k databázi je nutný soubor "orm.json" v konfigurační složce,
+    tedy například: "config/orm.json"
+</p>
+
+<pre><code class="json">{
+  "driver": "mysqli",
+  "hostname": "localhost",
+  "port": 3306,
+  "username": "root",
+  "password": "",
+  "database": "gephart"
+}</code></pre>
+
+<h2>Entita</h2>
+
+<p>
+    Entita je třída ve které jsou vlastnosti přístupné pomocí getterů a setterů.
+</p>
+
+<p>
+    V anotacích u vlastností definujeme jejich název a typ v databázi. U entity se v anotaci definuje název tabulky.
+</p>
+
+<p>
+    Příklad entity News uložené v "/src/App/Entity/News.php":
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace App\Entity;
+
+/**
+ * @ORM\Table news
+ * @ORM\Translation
+ */
+class News
+{
+
+    /**
+     * @var int
+     *
+     * @ORM\Id
+     */
+    private $id = 0;
+
+    /**
+     * @var string
+     *
+     * @ORM\Type VARCHAR(255)
+     * @ORM\Column title
+     * @ORM\Translatable
+     */
+    private $title = "";
+
+    /**
+     * @var string
+     *
+     * @ORM\Type TEXT
+     * @ORM\Column content
+     * @ORM\Translatable
+     */
+    private $content = "";
+
+    /**
+     * @var bool
+     *
+     * @ORM\Type TINYINT(1)
+     * @ORM\Column active
+     * @ORM\Translatable
+     */
+    private $active = false;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Type DATE
+     * @ORM\Column date
+     * @ORM\Translatable
+     */
+    private $date;
+
+    public function __construct()
+    {
+        $this->date = new \DateTime();
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     */
+    public function setContent(string $content)
+    {
+        $this->content = $content;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active)
+    {
+        $this->active = $active;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDate(): \DateTime
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param \DateTime $date
+     */
+    public function setDate(\DateTime $date)
+    {
+        $this->date = $date;
+    }
+
+}</code></pre>
+
+<h2>Repozitář</h2>
+
+<p>
+    Repozitář slouží vytáhnutí entit (už namapovaných objektů) z databáze.
+</p>
+
+<p>
+    Základní repozitář v "/src/App/Repository/NewsRepository.php" k entitě News může vypadat následovně:
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace App\Repository;
+
+use App\Entity\News;
+use Gephart\ORM\EntityManager;
+
+class NewsRepository
+{
+
+    /**
+     * @var EntityManager
+     */
+    private $entity_manager;
+
+    /**
+     * @var string
+     */
+    private $entity_class;
+
+    public function __construct(EntityManager $entity_manager)
+    {
+        $this->entity_class = News::class;
+        $this->entity_manager = $entity_manager;
+    }
+
+    public function findBy(array $find_by = [], array $params = [])
+    {
+        return $this->entity_manager->findBy($this->entity_class, $find_by, $params);
+    }
+
+    public function find(int $id)
+    {
+        $result = $this->findBy(["id = %1", $id]);
+
+        if (is_array($result) && !empty($result[0])) {
+            return $result[0];
+        }
+
+        return null;
+    }
+
+}</code></pre>
+
+<h2>Controller</h2>
+
+<p>
+    Nyní je vše připravené pro to, abychom mohli vytvářet, upravovat, vytahovat a mazat entity.
+</p>
+
+<p>
+    Zde je příklad controlleru "/src/App/Controller/NewsController.php", který to vše dělá:
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use App\Entity\News;
+use App\Repository\NewsRepository;
+use Gephart\Framework\Response\TemplateResponse;
+use Gephart\ORM\EntityManager;
+use Gephart\Request\Request;
+use Gephart\Routing\Router;
+
+class NewsController
+{
+
+    /**
+     * @var Router
+     */
+    private $router;
+
+    /**
+     * @var TemplateResponse
+     */
+    private $template_response;
+
+    /**
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var NewsRepository
+     */
+    private $news_repository;
+
+    /**
+     * @var EntityManager
+     */
+    private $entity_manager;
+
+    public function __construct(
+        Router $router,
+        TemplateResponse $template_response,
+        Request $request,
+        EntityManager $entity_manager,
+        NewsRepository $news_repository
+    )
+    {
+        $this->router = $router;
+        $this->template_response = $template_response;
+        $this->request = $request;
+        $this->news_repository = $news_repository;
+        $this->entity_manager = $entity_manager;
+    }
+
+    /**
+     * @Route {
+     *  "rule": "/admin/news",
+     *  "name": "admin_news"
+     * }
+     */
+    public function index()
+    {
+        if ($this->request->post("title")) {
+            $news = new News();
+            $news->setTitle($this->request->post("title"));
+            $news->setContent($this->request->post("content"));
+            $news->setActive($this->request->post("active"));
+            $news->setDate(new \DateTime($this->request->post("date")));
+
+            $this->entity_manager->save($news);
+
+            $url = $this->router->generateUrl("admin_news");
+            header("location: $url");
+            exit;
+        }
+
+        $news = $this->news_repository->findBy([], [
+            "ORDER BY" => "date DESC"
+        ]);
+
+        return $this->template_response->template("admin/news.html.twig", [
+            "news" => $news
+        ]);
+    }
+
+    /**
+     * @Route {
+     *  "rule": "/admin/news/edit/{id}",
+     *  "name": "admin_news_edit"
+     * }
+     */
+    public function edit($id)
+    {
+        $new = $this->news_repository->find($id);
+
+        if ($this->request->post("title")) {
+            $news->setTitle($this->request->post("title"));
+            $news->setContent($this->request->post("content"));
+            $news->setActive($this->request->post("active"));
+            $news->setDate(new \DateTime($this->request->post("date")));
+
+            $this->entity_manager->save($news);
+
+            $url = $this->router->generateUrl("admin_news_edit", ["id"=>$news->getId()]);
+            header("location: $url");
+            exit;
+        }
+
+
+        return $this->template_response->template("admin/news.edit.html.twig", [
+            "new" => $new
+        ]);
+    }
+
+    /**
+     * @Route {
+     *  "rule": "/admin/news/delete/{id}",
+     *  "name": "admin_news_delete"
+     * }
+     */
+    public function delete($id)
+    {
+        $news = $this->news_repository->find($id);
+        $news->setId($id);
+        $this->entity_manager->remove($news);
+
+        $url = $this->router->generateUrl("admin_news");
+        header("location: $url");
+        exit;
+    }
+
+}</code></pre>
