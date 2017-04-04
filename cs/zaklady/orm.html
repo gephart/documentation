@@ -229,6 +229,16 @@ class NewsRepository
 
 }</code></pre>
 
+<h2>Vygenerování tabulky</h2>
+
+<p>
+    Třída <em>Gephart\ORM\EntityManager</em> má metodu, které okamžitě vytvoří tabulku v nastavené databázi.
+</p>
+
+<pre><code class="php">$entity_manager = $container->get(\Gephart\ORM\EntityManager::class);
+$entity_manager->createTable(\App\Entity\News::class);
+// Hotovo, tabulka vytvořena</code></pre>
+
 <h2>Controller</h2>
 
 <p>
