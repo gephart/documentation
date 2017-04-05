@@ -1,0 +1,24 @@
+<h1>Jazyky</h1>
+
+<h2>config/language.json</h2>
+
+<p>
+    V configuračním souboru je nutné nastavit výchozí jazyk.
+</p>
+
+<pre><code class="json">{
+    "fallback": "cs"
+}</code></pre>
+
+<p>
+    Přes DI si v Listeneru nebo Controlleru natáhneme závislost na "\Gephart\Language\Language":
+</p>
+<pre><code class="php">$container = new \Gephart\DependencyInjection\Container();
+
+// ... \Gephart\Language\Language $language jako parametr v konstruktoru
+
+echo $language->get(); // cs (fallback)
+
+$language->set("en");
+echo $language->get(); // en
+</code></pre>
