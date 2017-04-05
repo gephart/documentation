@@ -13,9 +13,7 @@
 <p>
     Přes DI si v Listeneru nebo Controlleru natáhneme závislost na "\Gephart\Language\Language":
 </p>
-<pre><code class="php">$container = new \Gephart\DependencyInjection\Container();
-
-// ... \Gephart\Language\Language $language jako parametr v konstruktoru
+<pre><code class="php">// ... \Gephart\Language\Language $language jako parametr v konstruktoru
 
 echo $language->get(); // cs (fallback)
 

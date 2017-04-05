@@ -3,9 +3,7 @@
 <p>
     Přes DI si v Listeneru nebo Controlleru natáhneme závislost na "\Gephart\Sessions\Sessions":
 </p>
-<pre><code class="php">$container = new \Gephart\DependencyInjection\Container();
-
-// ... \Gephart\Sessions\Sessions $sessions jako parametr v konstruktoru
+<pre><code class="php">// ... \Gephart\Sessions\Sessions $sessions jako parametr v konstruktoru
 
 $sessions->set("key","value");
 echo $sessions->get("key"); // value
