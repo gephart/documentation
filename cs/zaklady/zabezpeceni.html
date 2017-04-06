@@ -29,13 +29,18 @@
     Následně jen stačí pomocí anotace nastavit potřebné oprávnění, které uživatel potřebuje.
 </p>
 
-<pre><code class="php">class AdminController {
+<pre><code class="php">&lt;?php
+
+class AdminController {
+
     /**
      * @Security ROLE_ADMIN
      */
+
     public function index(){
         // ...
-    }</code></pre>
+    }
+}</code></pre>
 
 <h2>Přihlášení</h2>
 
@@ -90,49 +95,10 @@ final class DefaultController
     V případě neúspěšného přihlášení je vyvolána výjimka v metodě Authentificator::authorise, v přihlášení je nutné tedy její odchycení.
 </p>
 
-<pre><code class="php">&lt;?php
-
-namespace Admin\Controller;
-
-use Gephart\Security\Authenticator\Authenticator;
-
-final class DefaultController
-{
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
-     * @var Authenticator
-     */
-    private $authenticator;
-
-    public function __construct(
-        Request $request,
-        Authenticator $authenticator
-    )
-    {
-        $this->request = $request;
-        $this->authenticator = $authenticator;
+<pre><code class="php">try {
+    if ($this->authenticator->authorise($email, $password)) {
+        // ... akce provedené po přihlášení, většinou přesměrování
     }
-
-    public function index()
-    {
-        if ($this->request->post("email") && $this->request->post("password")) {
-            $email = $this->request->post("email");
-            $password = $this->request->post("password");
-
-            try {
-                if ($this->authenticator->authorise($email, $password)) {
-                    // ... akce provedené po přihlášení, většinou přesměrování
-                }
-            } catch (\Exception $e) {
-                // ... akce provedé při neúspěchu
-            }
-        }
-
-        // ...
-    }
+} catch (\Exception $e) {
+    // ... akce provedé při neúspěchu
 }</code></pre>
