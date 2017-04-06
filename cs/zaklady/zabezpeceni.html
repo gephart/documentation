@@ -1,0 +1,138 @@
+<h1>Zabezpečení</h1>
+
+<p>
+    V konfiguračním souboru "config/security" je potřeba nastavit uživatelské role a jednotlivé uživatele.
+</p>
+
+<pre><code class="json">{
+  "role": {
+    "ROLE_ADMIN": ["ROLE_USER"],
+    "ROLE_USER": true
+  },
+  "provider": {
+    "Gephart\\Security\\Provider\\StaticProvider": {
+      "entity": "Gephart\\Security\\Entity\\User",
+      "algorithm": "bcrypt",
+      "cost": "10",
+      "salt": "secretsalt"
+    }
+  },
+  "users": {
+    "admin": {
+      "password": "$2y$10$j6lJ7QaHidjNdHUI0bBNZOkb0wrr2o4r.qBlbqtChZbLPCWgfxKdC",
+      "roles": ["ROLE_ADMIN"]
+    }
+  }
+}</code></pre>
+
+<p>
+    Následně jen stačí pomocí anotace nastavit potřebné oprávnění, které uživatel potřebuje.
+</p>
+
+<pre><code class="php">class AdminController {
+    /**
+     * @Security ROLE_ADMIN
+     */
+    public function index(){
+        // ...
+    }</code></pre>
+
+<h2>Přihlášení</h2>
+
+<p>
+    Přihlášení lze provést jednoduše pomocí formuláře a následného odchycení v kontroleru:
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace Admin\Controller;
+
+use Gephart\Security\Authenticator\Authenticator;
+
+final class DefaultController
+{
+
+    /**
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var Authenticator
+     */
+    private $authenticator;
+
+    public function __construct(
+        Request $request,
+        Authenticator $authenticator
+    )
+    {
+        $this->request = $request;
+        $this->authenticator = $authenticator;
+    }
+
+    public function index()
+    {
+        if ($this->request->post("email") && $this->request->post("password")) {
+            $email = $this->request->post("email");
+            $password = $this->request->post("password");
+
+            if ($this->authenticator->authorise($email, $password)) {
+                // ... akce provedené po přihlášení, většinou přesměrování
+            }
+        }
+
+        // ...
+    }
+}</code></pre>
+
+<p>
+    V případě neúspěšného přihlášení je vyvolána výjimka v metodě Authentificator::authorise, v přihlášení je nutné tedy její odchycení.
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace Admin\Controller;
+
+use Gephart\Security\Authenticator\Authenticator;
+
+final class DefaultController
+{
+
+    /**
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var Authenticator
+     */
+    private $authenticator;
+
+    public function __construct(
+        Request $request,
+        Authenticator $authenticator
+    )
+    {
+        $this->request = $request;
+        $this->authenticator = $authenticator;
+    }
+
+    public function index()
+    {
+        if ($this->request->post("email") && $this->request->post("password")) {
+            $email = $this->request->post("email");
+            $password = $this->request->post("password");
+
+            try {
+                if ($this->authenticator->authorise($email, $password)) {
+                    // ... akce provedené po přihlášení, většinou přesměrování
+                }
+            } catch (\Exception $e) {
+                // ... akce provedé při neúspěchu
+            }
+        }
+
+        // ...
+    }
+}</code></pre>
