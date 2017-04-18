@@ -1,3 +1,52 @@
 <h1>Controller</h1>
 
-<p>Controllery v sekci Routování nebo Šablony</p>
+<p>Controller slouží jako most mezi aplikační vrstvou modelu a šablonou.</p>
+
+<p>
+    Na základě požadavku (request), což může být jen konkrétní cesta, si z modelů vezme data a předá je šabloně:
+</p>
+
+
+
+<p>
+    src/App/Controller/PageController.php
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use App\Model\Page;
+use Gephart\Framework\Response\TemplateResponse;
+
+final class PageController
+{
+    /**
+     * @var Page
+     */
+    private $page;
+
+    /**
+     * @var TemplateResponse
+     */
+    private $response;
+
+    public function __construct(TemplateResponse $response, Page $page)
+    {
+        $this->response = $response;
+        $this->page = $page;
+    }
+
+    /**
+     * @Route /
+     */
+    public function run()
+    {
+        $page = $this->page->getPage();
+
+        return $this->response->template("page.html.twig", [
+            "page" => $page
+        ]);
+    }
+
+}</code></pre>
