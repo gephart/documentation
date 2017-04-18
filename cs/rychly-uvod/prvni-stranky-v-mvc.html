@@ -1,0 +1,92 @@
+<h1>První stránka v MVC</h1>
+
+<p>
+    Pro jednoduché použítí si ukážeme klasické použí frameworku pro jednoduchou stránku napsanou v architektuře MVC
+</p>
+
+<h2>Model</h2>
+
+<p>
+    src/App/Model/Page.php
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace App\Model;
+
+final class Page
+{
+
+    public function getPage()
+    {
+        return [
+            "title" => "První stránka v MVC",
+            "content" => "&lt;p>Obsah první stránky.&lt;/p>"
+        ];
+    }
+
+}</code></pre>
+
+<h2>View</h2>
+
+<p>
+    template/page.html.twig
+</p>
+
+<pre><code class="html">&lt;!doctype html>
+&lt;html>
+    &lt;head>
+        &lt;meta charset="utf-8"/>
+        &lt;title>{{ "{{" }} page.title {{ "}}" }}&lt;/title>
+    &lt;/head>
+    &lt;body>
+        &lt;h1>{{ "{{" }} page.title {{ "}}" }}&lt;/h1>
+
+        {{ "{{" }} page.content {{ "}}" }}
+    &lt;/body>
+&lt;/html></code></pre>
+
+<h2>Controller</h2>
+
+<p>
+    src/App/Controller/PageController.php
+</p>
+
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use App\Model\Page;
+use Gephart\Framework\Response\TemplateResponse;
+
+final class PageController
+{
+    /**
+     * @var Page
+     */
+    private $page;
+
+    /**
+     * @var TemplateResponse
+     */
+    private $response;
+
+    public function __construct(TemplateResponse $response, Page $page)
+    {
+        $this->response = $response;
+        $this->page = $page;
+    }
+
+    /**
+     * @Route /
+     */
+    public function run()
+    {
+        $page = $this->page->getPage();
+
+        return $this->response->template("page.html.twig", [
+            "page" => $page
+        ]);
+    }
+
+}</code></pre>
