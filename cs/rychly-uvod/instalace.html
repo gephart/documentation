@@ -15,6 +15,21 @@
 <pre><code class="bash">$ cd blog
 $ chmod -R 777 cache</code></pre>
 
+<h2>Připojení k databázi</h2>
+
+<p>
+    Pokud budete používat přibalené ORM, je ještě potřeba nastavit připojení k databázi v souboru "config/orm.json":
+</p>
+
+<pre><code class="json">{
+  "driver": "mysqli",
+  "hostname": "localhost",
+  "port": 3306,
+  "username": "root",
+  "password": "",
+  "database": "gephart"
+}</code></pre>
+
 <p>
     Nyní je vše hotovo a stačí si zobrazit přes server složku "blog/web", která jako jediná by měla být přístupná z webu.
 </p>
