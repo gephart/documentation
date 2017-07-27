@@ -37,7 +37,7 @@ class ResponseListener
 {
     public function __construct(EventManager $event_manager)
     {
-        $event_manager->attach(Router::RESPONSE_RENDER_EVENT, [$this, "reponseRender"]);
+        $event_manager->attach(Router::RESPONSE_RENDER_EVENT, [$this, "responseRender"]);
     }
 
     public function responseRender(Event $event)
