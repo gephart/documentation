@@ -101,3 +101,46 @@ final class DefaultController
 } catch (\Exception $e) {
     // ... akce provedé při neúspěchu
 }</code></pre>
+
+<p>Příklad odhlašovacího kontroleru:</p>
+
+<pre><code class="php">&lt;?php
+
+namespace App\Controller;
+
+use Gephart\Routing\Router;
+use Gephart\Security\Authenticator\Authenticator;
+
+final class LogoutController
+{
+
+    /**
+     * @var Authenticator
+     */
+    private $authenticator;
+
+    /**
+     * @var Router
+     */
+    private $router;
+
+    public function __construct(
+        Authenticator $authenticator,
+        Router $router
+    )
+    {
+        $this->authenticator = $authenticator;
+        $this->router = $router;
+    }
+
+    /**
+     * @Route {
+     *  "rule": "/logout",
+     *  "name": "logout"
+     * }
+     */
+    public function index() {
+        $this->authenticator->unauthorise();
+        $this->router->redirectTo("login");
+    }
+}</code></pre>
