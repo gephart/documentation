@@ -1,0 +1,53 @@
+<h2>Měřič kvality kódu</h2>
+<p>Ve vývojové liště se zobrazuje procentuální hodnota kvality kódu. Při každém pročistění <em>cache</em> dojde k nové analýze zdrojového kódu ve složce <em>src.</em></p>
+<p>Metriky jsou použity následovné:</p>
+<p>U tříd:</p>
+<table border="1">
+<tbody>
+<tr>
+<th>Metrika</th>
+<th>Zkratka</th>
+<th>Limit</th>
+</tr>
+<tr>
+<td>Počet odchozích závislostí</td>
+<td>ce</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Hloubka zanoření ve stromu dědičnosti</td>
+<td>dit</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Počet metod</td>
+<td>nom</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<p>U metod:</p>
+<table border="1">
+<tbody>
+<tr>
+<th>Metrika</th>
+<th>Zkratka</th>
+<th>Limit</th>
+</tr>
+<tr>
+<td>Cyklomatická složitost</td>
+<td>ccn</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Řádků kódu</td>
+<td>loc</td>
+<td>25</td>
+</tr>
+</tbody>
+</table>
+<p>Procentuální překročení limitu ubírá ze 100%.</p>
+<p>Celkové hodnocení je hodnocení nejslabšího článku.</p>
+<p>Příklad:</p>
+<p><a href="https://blog.katuscak.cz/wp-content/uploads/kvalita.png"><img class="aligncenter size-large wp-image-1554" src="https://blog.katuscak.cz/wp-content/uploads/kvalita-1024x205.png" alt="" width="648" height="130" srcset="https://blog.katuscak.cz/wp-content/uploads/kvalita-1024x205.png 1024w, https://blog.katuscak.cz/wp-content/uploads/kvalita-300x60.png 300w, https://blog.katuscak.cz/wp-content/uploads/kvalita-768x154.png 768w" sizes="(max-width: 648px) 100vw, 648px"></a></p>
+<p>Proč jsou zvolené metriky a jejich limity zrovna takové? Chci se o tom rozepsat v samostatném článku, myslím, že kvalita kódu si to zaslouží.</p>
