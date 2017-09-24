@@ -4,16 +4,17 @@
 
 <p>Pokud chcete nainstalovat framework do složky "blog", stačí spustit příkaz:</p>
 
-<pre><code class="bash">$ composer create-project gephart/framework-standard-edition blog</code></pre>
+<pre><code class="bash">$ composer create-project gephart/gephart blog "0.4"</code></pre>
 
 <h2>Práva pro zápis</h2>
 
 <p>
-    Po vytvoření základní struktury je potřeba nastavit práva pro zápis ve složce "blog/cache":
+    Po vytvoření základní struktury je potřeba nastavit práva pro zápis ve složce "blog/cache" a "blog/src" kam se ukládá vygenerovaný kód:
 </p>
 
 <pre><code class="bash">$ cd blog
-$ chmod -R 777 cache</code></pre>
+$ chmod -R 777 cache
+$ chmod -R 777 src</code></pre>
 
 <h2>Připojení k databázi</h2>
 
