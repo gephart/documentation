@@ -1,0 +1,94 @@
+<h1>HTTP</h1>
+
+<p>
+    Gephart implementuje PSR-7, ale pracuje nezávisle na vlastní implementaci, lze využít jakoukoli jinou, která PSR-7 dodržuje. Díky tomu lze Gephart snadno použít i jako middleware.
+</p>
+
+<h2>Request</h2>
+
+<p>
+    <em>Gephart/Framework/Kernel</em> požaduje jako jediná paramatr objekt implementující <em>Psr\Http\Message\ServerRequestInterface</em>. A ten lze snadno vytvořit:
+</p>
+
+<pre><code class="php">$request = (new RequestFactory())->createFromGlobals();</code></pre>
+
+<p>
+    K objektu lze získa přístup pomocí dependency injection:
+</p>
+
+<pre><code class="php">&lt;?php
+
+class DefaultController()
+{
+    public function __construct(\Psr\Http\Message\ServerRequestInterface $request)
+    {
+        $this->request = $request;
+    }
+
+    public function index()
+    {
+        $queryParams = $this->request->getQueryParams();
+    }
+}</code></pre>
+
+<h2>Response</h2>
+
+<p>Každý kontroler, který vrací obsah, jej musí vracet v objektu implementující <em>Psr\Http\Message\ResponseInterface</em></p>. Ve frameworku jsou dostupné 3 továrničky, které jej nainicializují:
+
+<h3>TemplateResponseFactory</h3>
+<pre><code class="php">&lt;?php
+
+use Gephart/Framework/Response/TemplateResponseFactory;
+
+class DefaultController()
+{
+    public function __construct(TemplateResponseFactory $response)
+    {
+        $this->response = $response;
+    }
+
+    public function index()
+    {
+        return $this->response->createResponse("default.html.twig");
+    }
+}</code></pre>
+
+<h3>TextResponseFactory</h3>
+<pre><code class="php">&lt;?php
+
+use Gephart/Framework/Response/TextResponseFactory;
+
+class DefaultController()
+{
+    public function __construct(TextResponseFactory $response)
+    {
+        $this->response = $response;
+    }
+
+    public function index()
+    {
+        return $this->response->createResponse("<h1>Nadpis</h1>");
+    }
+}</code></pre>
+
+<h3>TemplateResponseFactory</h3>
+<pre><code class="php">&lt;?php
+
+use Gephart/Framework/Response/JsonResponseFactory;
+
+class DefaultController()
+{
+    public function __construct(JsonResponseFactory $response)
+    {
+        $this->response = $response;
+    }
+
+    public function index()
+    {
+        return $this->response->createResponse(["data"=>"ok"]);
+    }
+}</code></pre>
+
+<p>
+    Každá z továzniček umožnuje nastavení HTTP kódu jako druhý parametr a hlavičky jako třetí parametr.
+</p>
