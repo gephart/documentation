@@ -7,7 +7,7 @@
 <h2>Request</h2>
 
 <p>
-    <em>Gephart/Framework/Kernel</em> požaduje jako jediná paramatr objekt implementující <em>Psr\Http\Message\ServerRequestInterface</em>. A ten lze snadno vytvořit:
+    <em>Gephart/Framework/Kernel</em> požaduje jako jediný parametr objekt implementující <em>Psr\Http\Message\ServerRequestInterface</em>. A ten lze snadno vytvořit:
 </p>
 
 <pre><code class="php">$request = (new RequestFactory())->createFromGlobals();</code></pre>
@@ -33,7 +33,8 @@ class DefaultController()
 
 <h2>Response</h2>
 
-<p>Každý kontroler, který vrací obsah, jej musí vracet v objektu implementující <em>Psr\Http\Message\ResponseInterface</em></p>. Ve frameworku jsou dostupné 3 továrničky, které jej nainicializují:
+<p>Každý kontroler, který vrací obsah, jej musí vracet v objektu implementující <em>Psr\Http\Message\ResponseInterface</em></p>
+<p>Ve frameworku jsou dostupné 3 továrničky, které jej nainicializují:</p>
 
 <h3>TemplateResponseFactory</h3>
 <pre><code class="php">&lt;?php
@@ -67,7 +68,7 @@ class DefaultController()
 
     public function index()
     {
-        return $this->response->createResponse("<h1>Nadpis</h1>");
+        return $this->response->createResponse("&lt;h1>Nadpis&lt;/h1>");
     }
 }</code></pre>
 
