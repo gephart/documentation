@@ -1,0 +1,42 @@
+<h1>Kolekce</h1>
+
+<p>
+    Kolekce jako datovou strukturu můžete znát z různých jazyků,
+    ale v PHP standardně obsažená není.
+    Jedná se de facto o pole na steroidech, které mají výhodu například
+    v tom, že mohou mít omezený typ hodnot.
+</p>
+
+<h2>Použití</h2>
+
+<p>Kolekce bez specifického typu mohou obsahovat jakoukoli položku:</p>
+
+<pre><code class="php">$collection = new Gephart\Collections\Collection();
+
+$collection->add("Something"); // Index - 0
+$collection->add(123); // Index - 1
+
+$item = $collection->get(1); // 123
+
+$collection->remove(1); // Delete item with index 1
+
+$items = $collection->all(); // [0 => "Something"];</code></pre>
+
+<p>Kolekce se specifickým typem lze použít pouze pro ten daný typ, jinak dojde k vyhození vyjímky:</p>
+
+<pre><code class="php">class SpecificEntity { public $text = ""; }
+
+$item1 = new SpecificEntity();
+$item1->text = "first";
+
+$item2 = new SpecificEntity();
+$item2->text = "second";
+
+$collection = new Gephart\Collections\Collection(SpecificEntity::class);
+
+$collection->add($item1);
+$collection->add($item2);
+// Or use method collect(): $collection->collect([$item1, $item2]);
+
+$item = $collection->get(1);
+echo $item->text; // "second"</code></pre>
