@@ -52,12 +52,13 @@ class AdminController {
 namespace Admin\Controller;
 
 use Gephart\Security\Authenticator\Authenticator;
+use Psr\Http\Message\ServerRequestInterface;
 
 final class DefaultController
 {
 
     /**
-     * @var Request
+     * @var ServerRequestInterface
      */
     private $request;
 
@@ -67,7 +68,7 @@ final class DefaultController
     private $authenticator;
 
     public function __construct(
-        Request $request,
+        ServerRequestInterface $request,
         Authenticator $authenticator
     )
     {
@@ -77,9 +78,11 @@ final class DefaultController
 
     public function index()
     {
-        if ($this->request->post("email") && $this->request->post("password")) {
-            $email = $this->request->post("email");
-            $password = $this->request->post("password");
+        $postData = $this->request->getParsedBody();
+
+        if (!empty($postData["email"]) && !empty($postData["password"])) {
+            $email = $postData["email"];
+            $password = $postData["password"];
 
             if ($this->authenticator->authorise($email, $password)) {
                 // ... akce provedené po přihlášení, většinou přesměrování
