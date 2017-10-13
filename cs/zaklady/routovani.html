@@ -10,26 +10,24 @@ RewriteRule ^(.*)$ /index.php?_route=$1 [L,QSA]</code></pre>
 <h2>index.php</h2>
 <p>Hlavní soubor
 <ul>
-    <li>Vytvoří se DI container
-    <li>Nastaví se hlavní složka konfigurace
-    <li>Spustí router
+    <li>Vytvoří se "request"
+    <li>Předá se jádru frameworku
+    <li>Vrátí "response" a vyrenderuje ho.
 </ul>
 <p>To je celé kouzlo.</p>
 <pre><code class="php">&lt;?php
 
-use Gephart\DependencyInjection\Container;
-use Gephart\Configuration\Configuration;
-use Gephart\Routing\Router;
+use Gephart\Framework\Kernel;
+use Gephart\Http\RequestFactory;
 
 include_once __DIR__ . "/../vendor/autoload.php";
 
-$container = new Container();
+$request = (new RequestFactory())->createFromGlobals();
 
-$configuration = $container->get(Configuration::class);
-$configuration->setDirectory(__DIR__ . "/config");
+$kernel = new Kernel($request);
 
-$router = $container->get(Router::class);
-$router->run();</code></pre>
+$response = $kernel->run();
+echo $kernel->render($response);
 
 <h2>/config/routing.json</h2>
 <p>Autoloading routes from controllers
@@ -45,7 +43,7 @@ $router->run();</code></pre>
 
 namespace App\Controller;
 
-use Gephart\Response\Response;
+use Gephart\Framework\Facade\Response;
 
 class DefaultController
 {
@@ -53,7 +51,7 @@ class DefaultController
      * @Route /
      */
     public function index() {
-        return new Response("Hello World");
+        return Response::text("Hello World");
     }
 }</code></pre>
 
@@ -69,7 +67,7 @@ class DefaultController
  * }
  */
 public function index($slug, $limit, $offset) {
-    return new Response("Hello " . $slug);
+    return Response::text("Hello " . $slug);
 }</code></pre>
 
 <h2>RoutePrefix</h2>
@@ -80,7 +78,7 @@ public function index($slug, $limit, $offset) {
 
 namespace App\Controller;
 
-use Gephart\Response\Response;
+use Gephart\Framework\Facade\Response;
 
 /**
  * @RoutePrefix /admin
@@ -91,7 +89,7 @@ class AdminController
      * @Route /page
      */
     public function index() {
-        return new Response("Hello Admin");
+        return Response::text("Hello Admin");
     }
 }</code></pre>
 
@@ -100,22 +98,11 @@ class AdminController
 
 namespace App\Controller;
 
-use Gephart\Response\Response;
-use Gephart\Routing\Router;
+use Gephart\Framework\Facade\Response;
+use Gephart\Framework\Facade\Router;
 
 class DefaultController
 {
-
-    /**
-     * @var Router
-     */
-    private $router;
-
-    public function __construct(Router $router)
-    {
-        $this->router = $router;
-    }
-
     /**
      * @Route {
      *  "rule": "/page/{slug}/{limit}/{offset}",
@@ -127,13 +114,13 @@ class DefaultController
      * }
      */
     public function index($slug, $limit, $offset) {
-        $url = $this->router->generateUrl("page_detail", [
+        $url = Router::generateUrl("page_detail", [
             "slug" => "articles",
             "limit" => "10",
             "offset" => "20",
         ]);
 
-        return new Response("Hello World - " . $url);
+        return Response::text("Hello World - " . $url);
     }
 }</code></pre>
 
