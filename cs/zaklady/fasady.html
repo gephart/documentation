@@ -1,0 +1,66 @@
+<h1>Fasády</h1>
+
+<p>Fasády slouží k jednoduššímu přístupu k nejpožívanějším službám.
+    Jde o jakýsi obal nad existující službou dostupný přes statickou třídu.</p>
+
+<p>Například službu <em>request</em> dostupnou přes dependency injection kontejner
+    jako <em>Psr\Http\Message\ServerRequestInterface</em> lze získat snadněji než
+    vytažením z kotenjneru:</p>
+
+<pre><code class="php">&lt;?php
+
+class DefaultController()
+{
+    public function __construct(\Psr\Http\Message\ServerRequestInterface $request)
+    {
+        $this->request = $request;
+    }
+
+    public function index()
+    {
+        $queryParams = $this->request->getQueryParams();
+    }
+}</code></pre>
+
+<p>A to použitím fasády <em>Gephart/Framework/Facade/Request</em>:</p>
+
+<pre><code class="php">&lt;?php
+
+use Gephart/Framework/Facade/Request;
+
+class DefaultController()
+{
+    public function index()
+    {
+        $queryParams = Request::getQueryParams();
+    }
+}</code></pre>
+
+<h2>Seznam fasád a jejich protějšků</h2>
+
+<table>
+    <tr>
+        <th>Fasáda</th>
+        <th>Služba</th>
+    </tr>
+    <tr>
+        <td>EntityManager</td>
+        <td>Gephart\ORM\EntityManager</td>
+    </tr>
+    <tr>
+        <td>EventManager</td>
+        <td>Gephart\EventManager\EventManager</td>
+    </tr>
+    <tr>
+        <td>Request</td>
+        <td>Psr\Http\Message\ServerRequestInterface</td>
+    </tr>
+    <tr>
+        <td>Response</td>
+        <td>Gephart\Framework\Response\ResponseFactory</td>
+    </tr>
+    <tr>
+        <td>Router</td>
+        <td>Gephart\Routing\Router</td>
+    </tr>
+</table>
