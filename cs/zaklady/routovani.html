@@ -27,7 +27,7 @@ $request = (new RequestFactory())->createFromGlobals();
 $kernel = new Kernel($request);
 
 $response = $kernel->run();
-echo $kernel->render($response);
+echo $kernel->render($response);</code></pre>
 
 <h2>/config/routing.json</h2>
 <p>Autoloading routes from controllers
